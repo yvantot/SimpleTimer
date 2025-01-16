@@ -41,6 +41,16 @@ main {
 	align-items: center;
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
+.editing p {
+	opacity: 0.5;
+	border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+}
+.timer-time {
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+	align-items: baseline;
+}
 .timer-info {
 	user-select: none;
 	width: 100%;
