@@ -48,16 +48,27 @@ async function init() {
 function addListeners() {
 	document.getElementById("add-timer").addEventListener("click", async () => {
 		const { timers } = await storage.get("timers");
-		const lastTimer = timers[timers.length - 1];
-		const id = lastTimer.id + 1;
-		const minutes = lastTimer.minutes + 10;
-		const data = {
-			id,
-			minutes,
-			description: "",
-			editing: false,
-		};
-		timers.push(data);
+		if (timers.length === 0) {
+			const data = {
+				id: 0,
+				minutes: 5,
+				description: "",
+				editing: false,
+			};
+			timers.push(data);
+		} else {
+			const lastTimer = timers[timers.length - 1];
+			const id = lastTimer.id + 1;
+			const minutes = lastTimer.minutes + 10;
+			const data = {
+				id,
+				minutes,
+				description: "",
+				editing: false,
+			};
+			timers.push(data);
+		}
+
 		await storage.set({ timers });
 	});
 }
