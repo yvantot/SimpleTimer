@@ -6,7 +6,8 @@
     "description": "A simple lightweight timer",
     "permissions": [
         "storage",
-        "alarms"
+        "alarms",
+        "notifications"
     ],
     "action": {
         "default_popup": "./html/popup.html",
