@@ -3,10 +3,9 @@
     "name": "Simple Timer",
     "author": "Jun Ivanne Dalman",
     "version": "1.0.0",
-    "description": "A simple lightweight timer",
+    "description": "A general purpose simple and lightweight timer extension",
     "permissions": [
         "storage",
-        "alarms",
         "notifications"
     ],
     "action": {
