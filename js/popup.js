@@ -1,4 +1,25 @@
 const storage = chrome.storage.local;
+
+chrome.runtime.onMessage.addListener((receive, _, send) => {
+	const { message } = receive;
+	if (message === "updateBar") {
+		const { timeFormatted, elapsedInMin, durationInMin } = receive;
+		const percent = 100 - (elapsedInMin / durationInMin) * 100;
+
+		document.querySelector(".play-time").textContent = timeFormatted;
+
+		const playbar = document.querySelector(".play-bar");
+		playbar.style.width = `${percent}%`;
+		if (percent < 20) {
+			playbar.style.backgroundColor = "red";
+		} else if (percent < 50) {
+			playbar.style.backgroundColor = "yellow";
+		} else if (percent <= 100) {
+			playbar.style.backgroundColor = "green";
+		}
+	}
+});
+
 const DEFAULT = {
 	timers: [
 		{
@@ -126,6 +147,7 @@ function addPlaybar(timer) {
 				<span> min</span>
 			</div>
 			<div class="play-desc">${description}</div>
+			<div class="play-time">00:00:00</div>
 			<div class="play-bar"></div>
 			<div class="play-action">
 				<div class="play-stop play-feature">
@@ -154,14 +176,6 @@ function addPlaybar(timer) {
 		chrome.runtime.sendMessage({ message: "restartTimer" });
 	});
 }
-
-chrome.runtime.onMessage.addListener((receive, _, send) => {
-	const { message } = receive;
-	if (message === "updateBar") {
-		const { timeFormatted, elapsedInSec } = receive;
-		console.log(timeFormatted, elapsedInSec);
-	}
-});
 
 function addTimer(data) {
 	const { id, minutes, description, editing } = data;

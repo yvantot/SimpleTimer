@@ -163,6 +163,7 @@ main {
 	border-radius: 3px;
 	text-align: center;
 	margin-right: auto;
+	transition: all 1s ease;
 }
 .play-value {
 	display: flex;

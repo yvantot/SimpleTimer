@@ -13,7 +13,7 @@ class setTimer {
 		this.interval = setInterval(async () => {
 			if (!this.isPaused) {
 				this.elapsedInSec += 1;
-				this.callback({ formattedTime: this.getHHMMSS(), elapsedInSec: this.elapsedInSec });
+				this.callback({ durationInMin: this.durationInMin, timeFormatted: this.getHHMMSS(), elapsedInSec: this.elapsedInSec });
 				this.setBadge();
 				if (this.elapsedInSec >= this.minToSec(this.durationInMin)) {
 					this.setNotif();
@@ -25,7 +25,8 @@ class setTimer {
 	async discontinue() {
 		if (this.interval) {
 			clearInterval(this.interval);
-
+			// Refactor
+			chrome.action.setBadgeText({ text: "" });
 			const { timers } = await storage.get("timers");
 			const index = timers.findIndex((timer) => timer.playing === true);
 			timers[index].playing = false;
@@ -98,17 +99,24 @@ class setTimer {
 	}
 }
 
-let timer = undefined;
-chrome.runtime.onMessage.addListener((receive, _, send) => {
+let timer = null;
+chrome.runtime.onMessage.addListener(async (receive, _, send) => {
 	const { message } = receive;
 	if (message === "newTimer") {
 		const { minutes, description } = receive;
-		timer = new setTimer(minutes, 0, description, ({ timeFormatted, elapsedInSec }) => chrome.runtime.sendMessage({ message: "updateBar", timeFormatted, elapsedInSec }));
+		timer = new setTimer(minutes, 0, description, ({ timeFormatted, elapsedInSec, durationInMin }) => chrome.runtime.sendMessage({ message: "updateBar", timeFormatted, elapsedInMin: timer.secToMin(elapsedInSec), durationInMin }));
 		timer.start();
 	} else if (message === "toggleTimer") {
 		timer.toggle();
 	} else if (message === "stopTimer") {
-		timer.discontinue();
+		if (timer) {
+			timer.discontinue();
+		} else {
+			const { timers } = await storage.get("timers");
+			const index = timers.findIndex((timer) => timer.playing === true);
+			timers[index].playing = false;
+			await storage.set({ timers });
+		}
 	} else if (message === "restartTimer") {
 		timer.restart();
 	}
